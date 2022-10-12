@@ -60,21 +60,23 @@ for k, v in sorted(cfg.items(), key=lambda v: v[0]):
     if isinstance(v, str):
         v = f'\'{v}\''
     all_args.append(f'{k}: Optional[{v_type}] = {v},')
-all_args.append(') -> Optional[\'DocumentArray\']:')
-all_args.append('\n    ...')
+all_args.extend((') -> Optional[\'DocumentArray\']:', '\n    ...'))
 func_signature = '\n'.join(all_args)
 
-all_args = ["def create(**kwargs) -> Optional['DocumentArray']:"]
-all_args.append('"""')
-all_args.append(
-    'Create Disco Diffusion artworks and return the result as a DocumentArray object.\n'
-)
+all_args = [
+    "def create(**kwargs) -> Optional['DocumentArray']:",
+    '"""',
+    'Create Disco Diffusion artworks and return the result as a DocumentArray object.\n',
+]
+
 for k, v in sorted(docs.items(), key=lambda x: x[0]):
     if v:
         _v = v.replace("\n", "").strip()
         all_args.append(f':param {k}: {_v}')
-all_args.append(':return: a DocumentArray object that has `n_batches` Documents')
-all_args.append('"""')
+all_args.extend(
+    (':return: a DocumentArray object that has `n_batches` Documents', '"""')
+)
+
 indent = '    '
 func_docstring = f'\n{indent}'.join(all_args)
 

@@ -21,17 +21,16 @@ class PromptPlanner:
                     {'tokenized': _pw[0], 'weight': _eval_scheduling_str(_pw[1])}
                 )
         elif isinstance(text_prompts, dict):
-            if text_prompts.get('version') == '1':
-                prompts = text_prompts['prompts']
-                for _p in text_prompts['prompts']:
-                    txt, weight = pmp.parse(_p['text'], _p.get('spellcheck'))
-                    weight = _p.get('weight', weight)
-                    _p['tokenized'] = txt
-                    _p['weight'] = _eval_scheduling_str(weight)
-            else:
+            if text_prompts.get('version') != '1':
                 raise ValueError(
                     f'unsupported text prompts schema: {text_prompts.get("version")}'
                 )
+            prompts = text_prompts['prompts']
+            for _p in prompts:
+                txt, weight = pmp.parse(_p['text'], _p.get('spellcheck'))
+                weight = _p.get('weight', weight)
+                _p['tokenized'] = txt
+                _p['weight'] = _eval_scheduling_str(weight)
         else:
             raise TypeError(f'unsupported text prompts type: {type(text_prompts)}')
 

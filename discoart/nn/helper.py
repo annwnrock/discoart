@@ -12,7 +12,4 @@ def set_seed(seed: int) -> None:
 
 
 def detach_gpu(val):
-    if isinstance(val, (int, float)):
-        return val
-    else:
-        return val.detach().cpu().item()
+    return val if isinstance(val, (int, float)) else val.detach().cpu().item()

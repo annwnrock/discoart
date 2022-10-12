@@ -145,12 +145,12 @@ def _local_save(
     force: bool = False,
 ) -> None:
     if is_busy_event.is_set() and not force:
-        logger.debug(f'another save is running, skipping')
+        logger.debug('another save is running, skipping')
         return
     is_sampling_done.wait()
     is_busy_event.set()
     try:
-        pb_path = os.path.join(get_output_dir(name), f'da.protobuf.lz4')
+        pb_path = os.path.join(get_output_dir(name), 'da.protobuf.lz4')
         da_batches.save_binary(pb_path)
         logger.debug(f'local backup to {pb_path}')
     except Exception as ex:
@@ -168,7 +168,7 @@ def _cloud_push(
     if 'DISCOART_OPTOUT_CLOUD_BACKUP' in os.environ:
         return
     if is_busy_event.is_set() and not force:
-        logger.debug(f'another cloud backup is running, skipping')
+        logger.debug('another cloud backup is running, skipping')
         return
     is_sampling_done.wait()
     is_busy_event.set()

@@ -133,13 +133,14 @@ def print_args_table(
 
     param_str = Table(
         title=table_title or cfg['name_docarray'],
-        caption=f'showing only non-default args'
+        caption='showing only non-default args'
         if only_non_default
         else 'showing all args ([b]bold *[/] args are non-default)',
         box=box.ROUNDED,
         highlight=True,
         title_justify='center',
     )
+
     param_str.add_column('Argument', justify='right')
     param_str.add_column('Value', justify='left')
 
@@ -148,7 +149,7 @@ def print_args_table(
             continue
         value = str(v)
         _non_default = False
-        if not default_args.get(k, None) == v:
+        if default_args.get(k, None) != v:
             if not only_non_default:
                 k = f'[b]{k}*[/]'
             _non_default = True
@@ -174,12 +175,13 @@ def cheatsheet():
         docs = yaml.load(ymlfile, Loader=Loader)
 
     param_tab = Table(
-        title=f'Cheatsheet for all supported parameters',
+        title='Cheatsheet for all supported parameters',
         box=box.ROUNDED,
         highlight=True,
         show_lines=True,
         title_justify='center',
     )
+
     param_tab.add_column('Argument', justify='right')
     param_tab.add_column('Default', justify='left', max_width=10, overflow='fold')
     param_tab.add_column('Description', justify='left')
@@ -234,7 +236,7 @@ def export_python(
         if k.startswith('_') or k in ignored_args:
             continue
 
-        if not default_args.get(k, None) == v:
+        if default_args.get(k, None) != v:
             non_defaults[k] = v
 
     kwargs_string = ',\n    '.join(

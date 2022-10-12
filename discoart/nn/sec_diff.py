@@ -17,7 +17,7 @@ class SkipBlock(nn.Module):
     def __init__(self, main, skip=None):
         super().__init__()
         self.main = nn.Sequential(*main)
-        self.skip = skip if skip else nn.Identity()
+        self.skip = skip or nn.Identity()
 
     def forward(self, input):
         return torch.cat([self.main(input), self.skip(input)], dim=1)
