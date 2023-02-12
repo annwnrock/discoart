@@ -18,7 +18,7 @@ def test_prompt_get_active_based_on_steps():
         ],
     }
     pp = PromptPlanner(smp)
-    for i in range(0, 500):
+    for i in range(500):
         assert pp.get_prompt_ids(smp.clip_models[0], i) == ((0,), (1.0,))
     for i in range(500, 750):
         assert pp.get_prompt_ids(smp.clip_models[0], i) == ((1,), (1.0,))
@@ -28,7 +28,7 @@ def test_prompt_get_active_based_on_steps():
 
 def test_prompt_get_active_based_on_clips():
     smp = SimpleNamespace(**default_args)
-    smp.clip_models = set(['a', 'b', 'c'])
+    smp.clip_models = {'a', 'b', 'c'}
     smp.text_prompts = {
         'version': '1',
         'prompts': [
@@ -38,7 +38,7 @@ def test_prompt_get_active_based_on_clips():
         ],
     }
     pp = PromptPlanner(smp)
-    for i in range(0, 1000):
+    for i in range(1000):
         assert pp.get_prompt_ids('a', i) == (
             (0, 1),
             (
@@ -58,7 +58,7 @@ def test_prompt_get_active_based_on_clips():
 
 def test_prompt_get_active_based_on_clips_steps():
     smp = SimpleNamespace(**default_args)
-    smp.clip_models = set(['a', 'b', 'c'])
+    smp.clip_models = {'a', 'b', 'c'}
     smp.text_prompts = {
         'version': '1',
         'prompts': [
@@ -76,7 +76,7 @@ def test_prompt_get_active_based_on_clips_steps():
         ],
     }
     pp = PromptPlanner(smp)
-    for i in range(0, 1000):
+    for i in range(1000):
         if i < 500:
             assert pp.get_prompt_ids('a', i) == (
                 (0, 1),
@@ -113,7 +113,7 @@ def test_prompt_get_active_based_on_weights():
         ],
     }
     pp = PromptPlanner(smp)
-    for i in range(0, 1000):
+    for i in range(1000):
         if i < 500:
             assert pp.get_prompt_ids(smp.clip_models[0], i) == (
                 (0, 1),
@@ -127,7 +127,7 @@ def test_prompt_get_active_based_on_weights():
                 (0,),
                 (5,),
             )
-        elif i >= 750:
+        else:
             assert pp.get_prompt_ids(smp.clip_models[0], i) == (
                 (1,),
                 (10,),

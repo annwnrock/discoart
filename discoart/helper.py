@@ -111,7 +111,7 @@ def get_remote_model_list(local_model_list: Dict[str, Any], force_print: bool = 
 
         print(param_str)
         local_model_list.clear()
-        local_model_list.update(remote_model_list)
+        local_model_list |= remote_model_list
 
 
 threading.Thread(
@@ -135,7 +135,7 @@ Please switch to a GPU device. If you are using Google Colab, then free tier wou
     return device
 
 
-def is_jupyter() -> bool:  # pragma: no cover
+def is_jupyter() -> bool:    # pragma: no cover
     """
     Check if we're running in a Jupyter notebook, using magic command `get_ipython` that only available in Jupyter.
 
@@ -149,14 +149,7 @@ def is_jupyter() -> bool:  # pragma: no cover
     except NameError:
         return False
     shell = get_ipython().__class__.__name__  # noqa: F821
-    if shell == 'ZMQInteractiveShell':
-        return True  # Jupyter notebook or qtconsole
-    elif shell == 'Shell':
-        return True  # Google colab
-    elif shell == 'TerminalInteractiveShell':
-        return False  # Terminal running IPython
-    else:
-        return False  # Other type (?)
+    return shell in ['ZMQInteractiveShell', 'Shell']
 
 
 def is_google_colab() -> bool:  # pragma: no cover
@@ -172,6 +165,7 @@ def is_google_colab() -> bool:  # pragma: no cover
 
 
 def get_ipython_funcs(show_widgets: bool = False):
+
     class NOP:
         def __call__(self, *args, **kwargs):
             return NOP()
@@ -192,10 +186,11 @@ def get_ipython_funcs(show_widgets: bool = False):
                 min=0,
                 max=4,
                 step=1,
-                description=f'n_batches:',
-                bar_style='info',  # 'success', 'info', 'warning', 'danger' or ''
+                description='n_batches:',
+                bar_style='info',
                 orientation='horizontal',
             )
+
             html_handle = HTML()
 
             nondefault_config_handle = HTML()
@@ -281,7 +276,7 @@ def load_clip_models(
 
     if text_clip_on_cpu:
         first_device = torch.device('cpu')
-        logger.debug(f'CLIP will be first loaded to CPU')
+        logger.debug('CLIP will be first loaded to CPU')
     else:
         first_device = device
 
@@ -333,9 +328,8 @@ def load_clip_models(
 def _check_sha(path, expected_sha):
     if 'DISCOART_DISABLE_CHECK_MODEL_SHA' in os.environ:
         return True
-    else:
-        with open(path, 'rb') as f:
-            return hashlib.sha256(f.read()).hexdigest() == expected_sha
+    with open(path, 'rb') as f:
+        return hashlib.sha256(f.read()).hexdigest() == expected_sha
 
 
 def _get_model_name(name: str) -> str:
@@ -498,10 +492,7 @@ class PromptParser(SimpleTokenizer):
 
     @staticmethod
     def _split_weight(prompt):
-        if ':' in prompt:
-            vals = prompt.rsplit(':', 1)
-        else:
-            vals = [prompt, 1]
+        vals = prompt.rsplit(':', 1) if ':' in prompt else [prompt, 1]
         return vals[0], float(vals[1])
 
     def parse(self, text: str, on_misspelled_token=None) -> Tuple[str, float]:
@@ -511,12 +502,11 @@ class PromptParser(SimpleTokenizer):
         for token in re.findall(self.pat, text):
             token = ''.join(self.byte_encoder[b] for b in token.encode('utf-8'))
             all_tokens.append(token)
-        unknowns = [
+        if unknowns := [
             v
             for v in self.spell.unknown(all_tokens)
             if len(v) > 2 and self.spell.correction(v) != v
-        ]
-        if unknowns:
+        ]:
             pairs = []
             for v in unknowns:
                 vc = self.spell.correction(v)
@@ -597,8 +587,9 @@ To save the full-size images, please check out the instruction in the next secti
 
     persist_file = _fl(
         os.path.join(get_output_dir(_name), 'da.protobuf.lz4'),
-        result_html_prefix=f'▶ Download the local backup (in case cloud storage failed): ',
+        result_html_prefix='▶ Download the local backup (in case cloud storage failed): ',
     )
+
 
     md = Markdown(
         f'''
@@ -701,9 +692,7 @@ _MAX_DIFFUSION_STEPS = 1000
 
 def _is_valid_schedule_str(val) -> bool:
     r = re.match(r'(False\b|True\b|[\(\)\[\]0-9\, \.\*\+\-])+', val)
-    if r and r.group(0) == val:
-        return True
-    return False
+    return bool(r and r.group(0) == val)
 
 
 def _eval_scheduling_str(val) -> List[float]:

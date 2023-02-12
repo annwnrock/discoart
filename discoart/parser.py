@@ -10,9 +10,10 @@ from . import __version__, __resources_path__
 
 def get_main_parser():
     parser = argparse.ArgumentParser(
-        epilog=f'Create compelling Disco Diffusion artworks in one line',
+        epilog='Create compelling Disco Diffusion artworks in one line',
         prog='python -m discoart',
     )
+
     parser.add_argument(
         '-v',
         '--version',

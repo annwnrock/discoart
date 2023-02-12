@@ -184,11 +184,7 @@ def do_run(
 
             loss = tv_losses + range_losses + sat_losses + init_losses
 
-            if loss != 0:
-                x_in_grad = torch.autograd.grad(loss, x_in)[0]
-            else:
-                x_in_grad = 0
-
+            x_in_grad = torch.autograd.grad(loss, x_in)[0] if loss != 0 else 0
             cut_losses = 0
 
             for model_stat in model_stats:

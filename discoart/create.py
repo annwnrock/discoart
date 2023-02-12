@@ -160,9 +160,8 @@ def create(**kwargs) -> Optional['DocumentArray']:
     from .config import load_config, print_args_table
 
     if 'init_document' in kwargs:
-        d = kwargs['init_document']
         _kwargs = {}
-        if d:
+        if d := kwargs['init_document']:
             if isinstance(d, str):
                 d = DocumentArray.pull(d)[0]
             elif isinstance(d, DocumentArray):
@@ -214,14 +213,14 @@ def create(**kwargs) -> Optional['DocumentArray']:
     try:
         from .runner import do_run
 
-        da = do_run(
+        is_exit0 = True
+        return do_run(
             _args,
             (model, diffusion, clip_models, secondary_model),
             device=device,
             events=events,
         )
-        is_exit0 = True
-        return da
+
     except KeyboardInterrupt:
         is_exit0 = True
     finally:
